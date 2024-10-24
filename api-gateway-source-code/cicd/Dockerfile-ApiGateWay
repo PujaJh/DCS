@@ -1,0 +1,4 @@
+FROM adoptopenjdk/openjdk8
+WORKDIR /app
+CMD ["nohup", "java", "-jar", "Api-gateway-Crop-Survey-0.0.1-SNAPSHOT.jar", ">", "Api-gateway-Crop-Survey.log", "&"]
+

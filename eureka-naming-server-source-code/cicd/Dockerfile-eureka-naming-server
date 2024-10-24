@@ -1,0 +1,4 @@
+FROM adoptopenjdk/openjdk8
+WORKDIR /app
+CMD ["nohup", "java", "-jar", "naming-server-0.0.1-SNAPSHOT.jar", ">", "naming-server.log", "&"]
+

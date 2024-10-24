@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+    tools {
+        maven "MAVEN" 
+        jdk "JDK" 
+    }
+    stages {
+        stage('Initialize'){
+            steps{
+                echo "PATH = ${M2_HOME}/bin:${PATH}"
+                echo "M2_HOME = /opt/maven"
+            }
+        }
+        stage('Build') { 
+            steps {
+                sh 'mvn -B -DskipTests clean package'
+                sh 'docker build --file cicd/Dockerfile-MoACS-KL -t naming-server-kl . '
+                sh 'docker tag naming-server-kl 10.195.96.139:5001/naming-server-kl'
+                sh 'docker image push 10.195.96.139:5001/naming-server-kl'
+            }
+        }
+        stage('Run') {
+           steps {
+                sh 'docker -H tcp://10.128.71.11:2365 image pull 10.195.96.139:5001/naming-server-kl'                                                        
+                sh 'docker -H tcp://10.128.71.11:2365 container rm -f naming-server-kl || true'                                                                   
+                sh 'docker -H tcp://10.128.71.11:2365 run --name naming-server-kl -d -p 8761:8761 -v /data/agristack/media:/data/agristack/media -m=2g --restart=always 10.195.96.139:5001/naming-server-kl'      
+           }
+        }
+    }
+}
