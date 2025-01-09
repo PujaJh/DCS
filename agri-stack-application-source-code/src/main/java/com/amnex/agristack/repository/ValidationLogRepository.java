@@ -35,10 +35,9 @@ public interface ValidationLogRepository extends JpaRepository<ValidationLog, Lo
                      @Param("expiresAt") Timestamp expiresAt,
                      @Param("isActive") Boolean isActive);
 
-
-    @Modifying
     @Transactional
-    @Query(value = "SELECT token FROM api_tokens WHERE service_name = :serviceName AND is_active = true", nativeQuery = true)
+    @Query(value = "SELECT token FROM api_tokens WHERE service_name = :serviceName AND is_active = true ORDER BY issued_at DESC LIMIT 1", nativeQuery = true)
     String getActiveTokenByServiceName(@Param("serviceName") String serviceName);
+
 
 }

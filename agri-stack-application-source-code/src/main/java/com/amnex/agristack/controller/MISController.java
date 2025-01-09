@@ -7,6 +7,7 @@ import javax.imageio.stream.ImageInputStream;
 import javax.servlet.http.HttpServletRequest;
 
 import com.amnex.agristack.config.JwtTokenUtil;
+import com.amnex.agristack.config.JwtUserDetailsService;
 import com.amnex.agristack.dao.FarmlandPlotRegistryDAO;
 import com.amnex.agristack.dao.RoleInputDAO;
 import com.amnex.agristack.dao.common.ResponseModel;
@@ -49,6 +50,12 @@ public class MISController {
 	SummaryReportService summaryReportService;
 	@Autowired
 	SurveyReviewService surveyReviewService;
+
+	@Autowired
+	JwtUserDetailsService jwtUserDetailsService;
+
+	@Autowired
+	JwtTokenUtil jwtTokenUtil;
 
 	// Retrieves crop distribution data by crop
 	/**
@@ -331,7 +338,7 @@ public class MISController {
 		claims.put("role", "admin");
 		claims.put("scope", "read");
 		String subject = "user#$123";
-		return  JwtTokenUtil.generateSecureToken(claims, subject,request);
+		return  jwtTokenUtil.generateSecureToken(claims, subject,request);
 
 	}
 

@@ -470,11 +470,9 @@ public class MISService {
 			// Assuming requestDAO is your Map<String, Object>
 			Map<String, Object> pagination = (Map<String, Object>) requestDAO.get("pagination");
 
-// Extracting page_number and page_size
 			int pageNumber = (int) pagination.get("page_number");
 			int pageSize = (int) pagination.get("page_size");
 
-// Now you can use pageNumber and pageSize variables
 			System.out.println("Page Number: " + pageNumber);
 			System.out.println("Page Size: " + pageSize);
 
@@ -492,13 +490,6 @@ public class MISService {
 			//Optional<UserMaster> op = userRepository.findByUserIdAndIsDeletedAndIsActive(Long.valueOf(userId), false, true);
 			UserMaster userMaster= new UserMaster();
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-
-			// Parse the string to LocalDateTime
-//			LocalDateTime localDateTime = LocalDateTime.parse(lastSyncDate, formatter);
-//			Timestamp timestamp = Timestamp.valueOf(localDateTime);
-//			System.out.println("timestamp "+timestamp);
-
-
 			// Convert LocalDateTime to Timestamp
 			String response = misDashboardRepository.getCultivatedAggregatedDetails_v2("village", 0L,pageNumber,pageSize);//timestamp);
 
@@ -598,7 +589,7 @@ public class MISService {
 
 
 
-				userId = (userId != null && !userId.isEmpty()) ? userId : "0";
+			userId = (userId != null && !userId.isEmpty()) ? userId : "0";
 			Integer stateLgdCode = (Integer) requestDAO.get("state_lgd_code");
 			String seasonName = (String) requestDAO.get("season");
 			String year = (String) requestDAO.get("year");
@@ -656,27 +647,18 @@ public class MISService {
 
 			resultMap.put("area_details",resultObject);
 			resultMap.put("pagination",pagination);
-//			resultMap.put("page_size",pageNumber);
-//			resultMap.put("page_limit",pageNumber);
 			resultMap.put("year",year);
 			resultMap.put("season",seasonName);
 			resultMap.put("state_lgd_code",stateLgdCode);
-			//resultMap.put("total_count",count);
 			Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
 			LocalDateTime timestamp1 = LocalDateTime.parse(lastSyncDate, formatter);
 			resultMap.put("timestamp",timestamp1);
 
 			ResponseWrapper responseWrapper = new ResponseWrapper();
 			responseWrapper.setResultData(resultObject);
-			//responseWrapper.setParameters(requestDAO);
-
 
 			return new ResponseModel(resultMap, CustomMessages.GET_RECORD, CustomMessages.GET_DATA_SUCCESS,
 					CustomMessages.SUCCESS, CustomMessages.METHOD_POST);
-
-
-//			return new ResponseModel(resultObject, CustomMessages.GET_RECORD, CustomMessages.GET_DATA_SUCCESS,
-//					CustomMessages.SUCCESS, CustomMessages.METHOD_POST);
 
 		} catch (Exception e) {
 			return CustomMessages.makeResponseModel(e.getMessage(), CustomMessages.FAILURE,
@@ -768,16 +750,10 @@ public class MISService {
 			String lastSyncDate = (String) requestDAO.get("last_sync_date");
 			int seasonStartYear = Integer.parseInt(year.split("-")[0]);
 			int seasonEndYear = Integer.parseInt(year.split("-")[1]);
-// Assuming requestDAO is your Map<String, Object>
 			Map<String, Object> pagination = (Map<String, Object>) requestDAO.get("pagination");
 
-// Extracting page_number and page_size
 			int pageNumber = (int) pagination.get("page_number");
 			int pageSize = (int) pagination.get("page_size");
-
-// Now you can use pageNumber and pageSize variables
-			System.out.println("Page Number: " + pageNumber);
-			System.out.println("Page Size: " + pageSize);
 
 			List<SowingSeason> seasons = seasonMasterRepository.findByIsDeletedFalseAndSeasonName(seasonName);
 			String requestTokenHeader = request.getHeader("Authorization");

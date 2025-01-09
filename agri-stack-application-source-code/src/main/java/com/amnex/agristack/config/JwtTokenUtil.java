@@ -44,7 +44,7 @@ public class JwtTokenUtil {
 	private UserMasterRepository userMasterRepository;
 
 	@Autowired
-	private static ValidationLogRepository validationLogRepository;
+	private ValidationLogRepository validationLogRepository;
 
 
 	public static String token ="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIyQxMjMiLCJyb2xlIjoiYWRtaW4iLCJzY29wZSI6InJlYWQiLCJleHAiOjE3NDE4MTIxMTIsImlhdCI6MTcyNjI2MDExMn0.pF2WETPvKJgjm82IinauCEj35WLqxrfRkc4fUM9XKoc";
@@ -122,26 +122,26 @@ public class JwtTokenUtil {
 //		}
 //	}
 
-	public static ResponseModel generateSecureToken(Map<String, Object> claims, String subject, HttpServletRequest request) throws Exception {
+	public ResponseModel generateSecureToken(Map<String, Object> claims, String subject, HttpServletRequest request) throws Exception {
 		String requestTokenHeader = request.getHeader("Authorization");
 		if ( requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
 
 			String jwtToken = requestTokenHeader.substring(7);
-			if(!jwtToken.equals(getActiveTokenByServiceName("central_api_access")))
+			if (!jwtToken.equals(getActiveTokenByServiceName("central_api_access")))
 				return new ResponseModel(null, CustomMessages.UNAUTHORIZED_MESSAGE, CustomMessages.UNAUTHORIZED_ERROR,
 						CustomMessages.UNAUTHORIZED, CustomMessages.METHOD_POST);
 
 		}
-		if ( requestTokenHeader != null && !requestTokenHeader.startsWith("Bearer ")) {
+		if (requestTokenHeader != null && !requestTokenHeader.startsWith("Bearer ")) {
 
 			String jwtToken = requestTokenHeader.substring(7);
-			if(!jwtToken.equals(getActiveTokenByServiceName("central_api_access")))
+			if (!jwtToken.equals(getActiveTokenByServiceName("central_api_access")))
 				return new ResponseModel(null, CustomMessages.UNAUTHORIZED_MESSAGE, CustomMessages.UNAUTHORIZED_ERROR,
 						CustomMessages.UNAUTHORIZED, CustomMessages.METHOD_POST);
 
 		}
 
-		if ( requestTokenHeader == null) {
+		if (requestTokenHeader == null) {
 			return new ResponseModel(null, CustomMessages.UNAUTHORIZED_MESSAGE, CustomMessages.UNAUTHORIZED_ERROR,
 					CustomMessages.UNAUTHORIZED, CustomMessages.METHOD_POST);
 
@@ -149,21 +149,22 @@ public class JwtTokenUtil {
 		String jwtToken = requestTokenHeader.substring(7);
 
 
-		System.out.println("requestTokenHeader "+requestTokenHeader);
+		System.out.println("requestTokenHeader " + requestTokenHeader);
 
 		// Check if the token is expired and generate a new one if needed
 		if (isTokenExpiredNew(jwtToken)) {
 			String newToken = createNewToken(claims, subject);
-			insertTokenInDatabase(newToken, "api_access", "example_service");  // Store new token in DB
-			return new ResponseModel(newToken,CustomMessages.SUCCESS,CustomMessages.GET_DATA_SUCCESS,CustomMessages.SUCCESS,CustomMessages.METHOD_GET);
+			System.out.println("newToken 1"+newToken);
+			insertTokenInDatabase(newToken, "api_access", "central_api_access");  // Store new token in DB
+			return new ResponseModel(newToken, CustomMessages.SUCCESS, CustomMessages.GET_DATA_SUCCESS, CustomMessages.SUCCESS, CustomMessages.METHOD_GET);
 		} else {
 			// If token is still valid, return the existing token
 			return new ResponseModel("token has not expired",CustomMessages.SUCCESS,CustomMessages.GET_DATA_SUCCESS,CustomMessages.SUCCESS,CustomMessages.METHOD_GET);
 		}
-	}
+		}
 
 	// Method to create a new token
-	public static String createNewToken(Map<String, Object> claims, String subject) {
+	public String createNewToken(Map<String, Object> claims, String subject) {
 		long currentTimeMillis = System.currentTimeMillis();
 		return Jwts.builder()
 				.setClaims(claims)
@@ -195,7 +196,7 @@ public class JwtTokenUtil {
 	}
 
 	// Method to insert the new token into the database
-	public static void insertTokenInDatabase(String token, String tokenType, String serviceName) throws Exception {
+	public void insertTokenInDatabase(String token, String tokenType, String serviceName) throws Exception {
 		// Database connection details
 		Timestamp issuedAt = new Timestamp(new Date().getTime());
 		Timestamp expiresAt = new Timestamp(issuedAt.getTime() + (6L * 30 * 24 * 60 * 60 * 1000));  // 6 months expiration
@@ -301,9 +302,9 @@ public class JwtTokenUtil {
 	    }
 	    return expectedMap;
 	}
-	public static String getActiveTokenByServiceName(String serviceName) {
+	public String getActiveTokenByServiceName(String serviceName) {
 		System.out.println("serviceName "+serviceName);
-		//String token = validationLogRepository.getActiveTokenByServiceName(serviceName);
+		String token = validationLogRepository.getActiveTokenByServiceName(serviceName);
 		System.out.println("token");
 		return token;
 		//return validationLogRepository.getActiveTokenByServiceName(serviceName);
